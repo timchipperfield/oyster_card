@@ -3,6 +3,7 @@ require 'oystercard'
 describe Oystercard do
   subject(:card) { described_class.new}
   let(:entry_station) { double :entry_station }
+  let(:exit_station) { double :exit_station }
 # In order to use public transport
 # As a customer
 # I want money on my card
@@ -41,7 +42,7 @@ describe Oystercard do
     it "changes the card to be in_journey" do
       card.top_up(1)
       card.touch_in(entry_station)
-      expect(card).to be_in_journey
+      expect(card.in_journey?).to eq true
     end
     it "raises an error if the card does not have the minimum balance for a journey" do
       expect{card.touch_in(entry_station)}.to raise_error 'Insufficient funds for journey'
@@ -49,23 +50,25 @@ describe Oystercard do
   end
 
   describe "#touch_out" do
+    before(:each) do
+      card.top_up(1)
+      card.touch_in(entry_station)
+    end
     it "changes the card to not be in_journey" do
-     card.top_up(1)
-     card.touch_in(entry_station)
-     card.touch_out
+     card.touch_out(exit_station)
      expect(card).not_to be_in_journey
    end
    it "calls the #deduct method" do
      expect(card).to receive(:deduct)
-     card.touch_out
+     card.touch_out(exit_station)
    end
 
    it "should deduct 1 from the balance" do
-     expect {card.touch_out}.to change{card.balance}.by(-1)
+     expect {card.touch_out(exit_station)}.to change{card.balance}.by(-1)
    end
 
    it "should forget the journey's entry station" do
-     card.touch_out
+     card.touch_out(exit_station)
      expect(card.entry_station).to eq nil
    end
 
@@ -84,5 +87,23 @@ describe Oystercard do
     end
   end
 
+  describe "#journeys" do
+    it "shows all the trips that have been made with the card" do
+      expect(card.journeys).to be_a Array
+    end
+    it "should start with no journeys" do
+      expect(card.journeys).to eq []
+    end
+    it "contains the entry and exit station" do
+      card.top_up(10)
+      card.touch_in('station1')
+      card.touch_out('station2')
+      expect(card.journeys).to include('station1' => 'station2')
+      card.touch_in('station3')
+      card.touch_out('station4')
+      expect(card.journeys).to include('station3' => 'station4')
+      expect(card.journeys).to include('station1' => 'station2')
+    end
+  end
 
 end
