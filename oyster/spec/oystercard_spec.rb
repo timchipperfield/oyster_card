@@ -104,6 +104,7 @@ describe Oystercard do
       expect(card.journeys).to include('station3' => 'station4')
       expect(card.journeys).to include('station1' => 'station2')
     end
+
   end
 
 end

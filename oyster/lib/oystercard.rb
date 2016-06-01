@@ -22,14 +22,15 @@ class Oystercard
 
   def touch_in(entry_station)
     @entry_station = entry_station
-    @single_journey = []
-    @single_journey << entry_station
+    initiate_journey
+    record_start_journey(entry_station)
     fail 'Insufficient funds for journey' if check_funds
   end
 
   def touch_out(exit_station)
     @exit_station = exit_station
-    @single_journey << exit_station
+    record_end_journey(exit_station)
+    store_journey
     @entry_station = nil
     deduct(MINIMUM_BALANCE)
   end
@@ -39,10 +40,27 @@ class Oystercard
   end
 
   def journeys
-    @journeys << Hash[*@single_journey]
+    @journeys
   end
 
+
   private
+
+  def initiate_journey
+    @single_journey = []
+  end
+
+  def record_start_journey(entry_station)
+    @single_journey << entry_station
+  end
+
+  def record_end_journey(exit_station)
+    @single_journey << exit_station
+  end
+
+  def store_journey
+    @journeys << Hash[*@single_journey]
+  end
 
   def check_funds
     @balance < MINIMUM_BALANCE
