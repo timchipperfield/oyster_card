@@ -4,6 +4,7 @@ describe Oystercard do
   subject(:card) { described_class.new}
   let(:entry_station) { double :entry_station }
   let(:exit_station) { double :exit_station }
+  let(:journey) { double :journey}
 # In order to use public transport
 # As a customer
 # I want money on my card
@@ -103,5 +104,33 @@ describe Oystercard do
     end
 
   end
+
+  describe '#fare' do
+
+    it 'should return the minimum fare' do
+      allow(journey).to receive(:entry_station) {entry_station}
+      allow(journey).to receive(:exit_station) {exit_station}
+      allow(entry_station).to receive(:name) {entry_station}
+      allow(exit_station).to receive(:name) {exit_station}
+      expect(card.fare(journey)).to eq Oystercard::MINIMUM_FARE
+    end
+
+    it 'if journey missing entry or exit #fare should return penalty fare' do
+      card.touch_out(exit_station)  
+      expect{card.touch_out(exit_station)}.to change{card.balance}.by(-Oystercard::PENALTY_FARE)
+    end
+
+
+
+
+
+  end
+
+
+
+
+
+
+
 
 end
