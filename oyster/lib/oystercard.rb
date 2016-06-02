@@ -1,15 +1,18 @@
 require_relative 'journey'
-
+require_relative 'journeylog'
 
 class Oystercard
 
-	attr_reader :balance, :entry_station, :journeys
+	attr_reader :balance, :entry_station, :journeys, :journeylog
+
+
 
   MAXIMUM_BALANCE = 90
   MINIMUM_FARE = 1
   PENALTY_FARE = 6
 
 	def initialize
+    @journeylog = JourneyLog.new
 		@balance = 0
     @journeys = []
 	end
@@ -48,19 +51,13 @@ class Oystercard
   end
 
   def fare(journey)
-    if journey.entry_station.name == "no check-in" || journey.exit_station.name == "no check-in"
-      return PENALTY_FARE
-    else
-      return MINIMUM_FARE
-    end
+    return PENALTY_FARE if journey.entry_station.name == "no check-in" || journey.exit_station.name == "no check-in"
+    MINIMUM_FARE
   end
 
   def in_journey?
-    if @journeys != []
-      @journeys.last.entry_station != nil && @journeys.last.exit_station == nil
-    else
+     return @journeys.last.entry_station != nil && @journeys.last.exit_station == nil if @journeys != []
       false
-    end
   end
 
   def journeys

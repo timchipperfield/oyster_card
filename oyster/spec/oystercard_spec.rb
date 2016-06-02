@@ -116,21 +116,19 @@ describe Oystercard do
     end
 
     it 'if journey missing entry or exit #fare should return penalty fare' do
-      card.touch_out(exit_station)  
+      card.touch_out(exit_station)
       expect{card.touch_out(exit_station)}.to change{card.balance}.by(-Oystercard::PENALTY_FARE)
     end
 
-
-
-
-
   end
 
+  describe "upon initialization" do
 
+    it "creates a new instance of JourneyLog" do
+      expect(card.journeylog).not_to eq nil
+    end
 
-
-
-
+  end
 
 
 end
