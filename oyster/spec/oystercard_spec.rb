@@ -98,11 +98,8 @@ describe Oystercard do
       card.top_up(10)
       card.touch_in('station1')
       card.touch_out('station2')
-      expect(card.journeys).to include('station1' => 'station2')
-      card.touch_in('station3')
-      card.touch_out('station4')
-      expect(card.journeys).to include('station3' => 'station4')
-      expect(card.journeys).to include('station1' => 'station2')
+      expect(card.journeys.last.entry_station.name).to eq 'station1'
+      expect(card.journeys.last.exit_station.name).to eq 'station2'
     end
 
   end
